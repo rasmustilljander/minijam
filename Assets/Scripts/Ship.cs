@@ -10,8 +10,6 @@ public class Ship : MonoBehaviour
     public bool selected = false;
     public float speed = 25f;
 
-    Vector3 direction = Vector3.up;
-
     Queue<Tuple<Vector2, Vector2>> moves = new Queue<Tuple<Vector2, Vector2>>();
     UserClicked userClicked;
 
@@ -33,7 +31,7 @@ public class Ship : MonoBehaviour
             {
                 Camera camera = Camera.main;
                 Vector3 desiredTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -camera.transform.position.z));
-                Vector3 currentVector = transform.position + direction.normalized * Mathf.Pow(speed, 1 / 4f);
+                Vector3 currentVector = transform.position + transform.up.normalized * Mathf.Pow(speed, 1 / 4f);
 
                 float distance = 0;
                 for (int i = 0; i < interPolationSteps; ++i)
@@ -65,7 +63,10 @@ public class Ship : MonoBehaviour
             Vector3 prev = transform.position;
             transform.position = actualTargetVector;
             //Vector3.SmoothDamp(transform.position, actualTargetVector, ref vel, GameState.TurnLength / interPolationSteps / Time.deltaTime);
-            direction = transform.position - prev;
+            Vector3 direction = transform.position - prev;
+
+            //direction = Vector3.RotateTowards(transform.forward, direction, float.MaxValue, 0f);
+            //transform.rotation = Quaternion.LookRotation(direction);
         }
     }
 
