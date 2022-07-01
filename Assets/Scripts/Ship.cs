@@ -6,50 +6,62 @@ using System;
 public class Ship : MonoBehaviour
 {
     GameState gameState;
+    UserClicked userClicked;
 
     public bool selected = false;
     public float speed = 25f;
 
     Queue<Tuple<Vector2, Vector2>> moves = new Queue<Tuple<Vector2, Vector2>>();
-    UserClicked userClicked;
+
+    float timeSinceLastMove = 0;
+    int interPolationSteps = 50;
+    Vector3 actualTargetVector = Vector3.zero;
 
     void Awake()
     {
         gameState = FindObjectOfType<GameState>();
         Assert.IsNotNull(gameState, "Gamestate cannot be null");
-        userClicked = gameObject.AddComponent<UserClicked>();
+        userClicked = FindObjectOfType<UserClicked>();
+        Assert.IsNotNull(userClicked, "UserClicked cannot be null");
+        userClicked.userClickedEvent += UserClicked;
     }
 
-    float timeSinceLastMove = 0;
-    int interPolationSteps = 50;
-    Vector3 actualTargetVector = Vector3.zero;
-    void Update()
+    void OnDestroy()
     {
-        if (selected && gameState.isPlayerTurn())
-        {
-            if (userClicked.DidUserClick())
-            {
-                Camera camera = Camera.main;
-                Vector3 desiredTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -camera.transform.position.z));
-                Vector3 currentVector = transform.position + transform.up.normalized * Mathf.Pow(speed, 1 / 4f);
+        userClicked.userClickedEvent -= UserClicked;
+    }
 
-                float distance = 0;
-                for (int i = 0; i < interPolationSteps; ++i)
-                {
-                    Vector3 prev = currentVector;
-                    currentVector = Vector3.Slerp(currentVector, desiredTarget, 0.05f * i);
-                    moves.Enqueue(new Tuple<Vector2, Vector2>(prev, currentVector));
-                    distance += Vector3.Distance(prev, currentVector);
-                    if (distance > speed)
-                    {
-                        break;
-                    }
-                }
+    bool UserClicked()
+    {
+        if(!selected)
+        {
+            return false;
+        }
+        moves.Clear();
+        Camera camera = Camera.main;
+        Vector3 desiredTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -camera.transform.position.z));
+        Vector3 currentVector = transform.position + transform.up.normalized * Mathf.Pow(speed, 1 / 4f);
+
+        float distance = 0;
+        for (int i = 0; i < interPolationSteps; ++i)
+        {
+            Vector3 prev = currentVector;
+            currentVector = Vector3.Slerp(currentVector, desiredTarget, 0.05f * i);
+            moves.Enqueue(new Tuple<Vector2, Vector2>(prev, currentVector));
+            distance += Vector3.Distance(prev, currentVector);
+            if (distance > speed)
+            {
+                break;
             }
         }
-        else
+        return true;
+    }
+
+    void Update()
+    {
+        if(!gameState.isPlayerTurn())
         {
-            if(moves.Count == 0)
+            if (moves.Count == 0)
             {
                 return;
             }
@@ -77,6 +89,7 @@ public class Ship : MonoBehaviour
             GUILayout.BeginArea(new Rect(10, 300, 300, 300));
             if (GUILayout.Button($"Selected ship {gameObject.name}"))
             {
+                userClicked.ExplicitlyConsume();
             }
             GUILayout.EndArea();
         }
