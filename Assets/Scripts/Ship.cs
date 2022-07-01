@@ -13,6 +13,7 @@ public class Ship : MonoBehaviour
     public float speed = 25f;
 
     Queue<Tuple<Vector2, Vector2>> gizmoMoves = new Queue<Tuple<Vector2, Vector2>>();
+    // TODO meraz use moves for movement... it still uses the gizmomoves
     List<Vector3> moves = new List<Vector3>();
 
     float timeSinceLastMove = 0;
@@ -65,6 +66,7 @@ public class Ship : MonoBehaviour
 
             lineRenderer.positionCount = moves.Count;
             lineRenderer.SetPositions(moves.ToArray());
+            lineRenderer.enabled = true;
         }
         return true;
     }
@@ -103,6 +105,10 @@ public class Ship : MonoBehaviour
                 transform.RotateAround(transform.transform.position, Vector3.forward, angle);
                 //transform.LookAt(direction, );
             }
+            else
+            {
+                lineRenderer.enabled = false;
+            }
         }
     }
 
@@ -110,7 +116,7 @@ public class Ship : MonoBehaviour
     {
         if (selected)
         {
-            GUILayout.BeginArea(new Rect(10, 300, 300, 300));
+            GUILayout.BeginArea(new Rect(10, 40, 300, 300));
             if (GUILayout.Button($"Selected ship {gameObject.name}"))
             {
             }
