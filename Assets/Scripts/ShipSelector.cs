@@ -36,8 +36,6 @@ public class ShipSelector : MonoBehaviour
 
         if (rayCheck)
         {
-
-            Debug.Log($"hit.collider.gameobject.name={hit.collider.gameObject.name}");
             Ship newSelectedShip = hit.collider.gameObject.transform.parent.parent.GetComponentInChildren<Ship>();
             if (newSelectedShip)
             {

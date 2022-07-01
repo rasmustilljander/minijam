@@ -284,6 +284,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ship (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7336508996044813056, guid: ea58cf4c31bd9374b951fd736e243320, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ea58cf4c31bd9374b951fd736e243320, type: 3}
 --- !u!1 &1695600179 stripped
@@ -303,6 +307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73a017605eddfbc43b66917a14e69f23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  keyCodeToCheck: 0
 --- !u!1001 &1949485659
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -313,6 +318,10 @@ PrefabInstance:
     - target: {fileID: 1924424526937364513, guid: 8d64748eb12d61e44bd50e756d5d838b, type: 3}
       propertyPath: m_Name
       value: Planet
+      objectReference: {fileID: 0}
+    - target: {fileID: 1924424526937364513, guid: 8d64748eb12d61e44bd50e756d5d838b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3899643480144442021, guid: 8d64748eb12d61e44bd50e756d5d838b, type: 3}
       propertyPath: m_RootOrder
