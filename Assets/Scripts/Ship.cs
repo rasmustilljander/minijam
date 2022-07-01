@@ -30,31 +30,22 @@ public class Ship : MonoBehaviour
 
         lineRenderer = gameObject.GetComponent<LineRenderer>();
         Assert.IsNotNull(lineRenderer, "LineRenderer cannot be null");
+        lineRenderer.startWidth = 0.1f;
+        lineRenderer.endWidth = 0.1f;
+        lineRenderer.numCornerVertices = 1;
+        lineRenderer.useWorldSpace = true;
     }
 
     private bool ComputePath()
     {
         moves.Clear();
         gizmoMoves.Clear();
-        Vector3 currentVector = transform.position + transform.up.normalized*0.1f;
-        //Vector3 currentVector = transform.position + transform.up.normalized * Mathf.Pow(speed, 1 / 4f);
-        /*
-        {
-            // Pre-movement to limit steering
-            Vector3 preMovementPosition = transform.position;
-            Vector3 preMovementDesiredPosition = currentVector;
-            float deltaT = 1f / preInterPolationSteps;
-            for (int i = 0; i < preInterPolationSteps; ++i)
-            {
-                Vector3 prev = preMovementPosition;
-                preMovementPosition = Vector3.Slerp(preMovementPosition, preMovementDesiredPosition, deltaT * i);
-                moves.Add(preMovementPosition);
-                gizmoMoves.Enqueue(new Tuple<Vector2, Vector2>(prev, preMovementPosition));
-            }
-        }*/
+        Vector3 offset = transform.position;
+        Vector3 currentVector = transform.up * 0.1f;
 
         Camera camera = Camera.main;
         Vector3 desiredTarget = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -camera.transform.position.z));
+        desiredTarget -= offset;
         {
             // Second part of the movement
             float distance = 0;
@@ -65,18 +56,15 @@ public class Ship : MonoBehaviour
                 currentVector = Vector3.Slerp(currentVector, desiredTarget, deltaT * i);
                 float previusDistance = distance;
                 distance += Vector3.Distance(prev, currentVector);
-                if(!Mathf.Approximately(previusDistance, distance))
+                if (!Mathf.Approximately(previusDistance, distance))
                 {
-                    moves.Add(currentVector);
-                    gizmoMoves.Enqueue(new Tuple<Vector2, Vector2>(prev, currentVector));
+                    moves.Add(currentVector + offset);
+                    gizmoMoves.Enqueue(new Tuple<Vector2, Vector2>(prev + offset, currentVector + offset));
                 }
             }
-            lineRenderer.startWidth = 0.1f;
-            lineRenderer.endWidth = 0.1f;
-            lineRenderer.numCornerVertices = 1;
+
             lineRenderer.positionCount = moves.Count;
             lineRenderer.SetPositions(moves.ToArray());
-            lineRenderer.useWorldSpace = true;
         }
         return true;
     }
