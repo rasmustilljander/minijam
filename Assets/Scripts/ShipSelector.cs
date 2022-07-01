@@ -12,17 +12,19 @@ public class ShipSelector : MonoBehaviour
 
     void Awake()
     {
-        userClicked = FindObjectOfType<UserClicked>();
-        Assert.IsNotNull(userClicked, "UserClicked cannot be null");
-        userClicked.userClickedEvent += UserClicked;
+        userClicked = gameObject.AddComponent<UserClicked>();
+        userClicked.keyCodeToCheck = KeyCode.Mouse0;
     }
 
-    void OnDestroy()
+    void Update()
     {
-        userClicked.userClickedEvent -= UserClicked;
+        if(userClicked.DidUserClick())
+        {
+            CheckForClickAndShipIntersection();
+        }
     }
 
-    bool UserClicked()
+    void CheckForClickAndShipIntersection()
     {
         Camera camera = Camera.main;
         Vector3 screenToWorld = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, camera.nearClipPlane));
@@ -40,10 +42,8 @@ public class ShipSelector : MonoBehaviour
             if (newSelectedShip)
             {
                 StartCoroutine(UpdateSelectedShip(newSelectedShip));
-                return true;
             }
         }
-        return false;
     }
 
     IEnumerator UpdateSelectedShip(Ship newSelectedShip)

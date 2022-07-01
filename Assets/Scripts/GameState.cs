@@ -7,13 +7,6 @@ public class GameState : MonoBehaviour
 {
     private bool playerTurn = true;
     public const float TurnLength = 2f;
-    UserClicked userClicked;
-
-    void Awake()
-    {
-        userClicked = FindObjectOfType<UserClicked>();
-        Assert.IsNotNull(userClicked, "UserClicked cannot be null");
-    }
 
     void OnGUI()
     {
@@ -22,7 +15,6 @@ public class GameState : MonoBehaviour
             GUILayout.BeginArea(new Rect(10, 10, 300, 300));
             if (GUILayout.Button("End Turn"))
             {
-                userClicked.ExplicitlyConsume();
                 StartCoroutine(EndTurn());
             }
             GUILayout.EndArea();
